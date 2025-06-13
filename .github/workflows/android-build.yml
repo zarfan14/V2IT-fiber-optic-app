@@ -32,11 +32,16 @@ jobs:
     - name: Accept Android SDK licenses
       run: yes | sdkmanager --licenses
 
+<<<<<<< HEAD
     - name: Install Build-Tools + AIDL
       run: |
         sdkmanager "build-tools;33.0.2"
         sdkmanager "platform-tools"
         sdkmanager "platforms;android-33"
+=======
+    - name: Install Android Build-Tools 33.0.2
+      run: sdkmanager "build-tools;33.0.2"
+>>>>>>> 26081eb (Initial commit for V2IT Fiber Optic App)
 
     - name: Build release APK
       run: ./gradlew assembleRelease
