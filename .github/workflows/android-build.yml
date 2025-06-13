@@ -1,11 +1,9 @@
-
 name: Android Build
 
 on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
   build:
@@ -15,39 +13,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-
-    - name: Install required packages
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y unzip zip
+    - name: Install packages
+      run: sudo apt-get update && sudo apt-get install -y unzip zip openjdk-11-jdk
 
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
 
-    - name: Accept Android SDK licenses
-      run: yes | sdkmanager --licenses
+    - name: Cache Android SDK
+      uses: actions/cache@v3
+      with:
+        path: ~/.android
+        key: ${{ runner.os }}-android-sdk
 
-<<<<<<< HEAD
-    - name: Install Build-Tools + AIDL
+    - name: Install Android SDK components
       run: |
-        sdkmanager "build-tools;33.0.2"
-        sdkmanager "platform-tools"
-        sdkmanager "platforms;android-33"
-=======
-    - name: Install Android Build-Tools 33.0.2
-      run: sdkmanager "build-tools;33.0.2"
->>>>>>> 26081eb (Initial commit for V2IT Fiber Optic App)
+        sdkmanager --update
+        yes | sdkmanager --licenses
+        sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
-    - name: Build release APK
-      run: ./gradlew assembleRelease
+    - name: Build APK
+      run: buildozer android release
 
-    - name: Upload APK as artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-release-apk
-        path: app/build/outputs/apk/release/*.apk
+        path: bin/*.apk
